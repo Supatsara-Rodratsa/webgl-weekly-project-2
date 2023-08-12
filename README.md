@@ -1,3 +1,15 @@
-# custom-shader
+# Custom Shader with Three.js
 
-[Edit on StackBlitz ⚡️](https://stackblitz.com/edit/vitejs-vite-b53mo1)
+## Installation
+
+Use the npm package manager to install dependencies.
+
+```bash
+npm install
+```
+
+## Usage
+
+```
+npm run dev
+```
