@@ -1,24 +1,34 @@
-vec3 cosPalette(  float t,  vec3 a,  vec3 b,  vec3 c, vec3 d ){
-    return a + b*cos( 6.28318*(c*t+d) );
+uniform vec2 u_resolution;
+uniform float u_time;
+uniform sampler2D u_texture; 
+uniform vec3 u_Color1;
+uniform vec3 u_Color2;
+uniform float u_wave;
+
+#define PI 3.14
+
+varying vec2 v_uv;
+
+vec2 wave(vec2 st, float time) {
+    st.y += cos(st.x * 2.0 + time);
+    return st;
 }
 
-varying float vRandom;
-varying float vNoise;
-varying vec2 vUv;
+float line(vec2 st, float width) {
+    return step(width, 1.0 - smoothstep(.0,1.,abs(sin(st.y*PI))));
+}
 
-uniform vec3 uColor1;
-uniform vec3 uColor2;
-uniform sampler2D uTexture;
+void main() {
+    // Normalize coordinates
+    vec2 st = gl_FragCoord.xy / u_resolution.xy * v_uv;;
+    st.x *= u_resolution.x / u_resolution.y;
 
+    // Set Color
+    vec3 color = mix(u_Color1, u_Color2, abs(cos(u_time)));
 
-void main(){
-  vec3 finalColor = mix(uColor1, uColor2, vRandom);
-  vec4 texture = texture2D(uTexture, vUv * 3.0);
-
-  vec3 brightness = vec3(0.5, 0.5, 0.5);
-  vec3 contrast = vec3(0.5, 0.5, 0.5);
-  vec3 oscilation = vec3(1.0, 1.0, 1.0);
-  vec3 phase = vec3(0.0, 0.1, 0.2);
-  vec3 final =  cosPalette(1.0 - vNoise, brightness, contrast, oscilation, phase);
-  gl_FragColor = vec4(final, 0.9);
+    st = wave(st * u_wave, u_time * 0.9);
+    float lineEffect = line(st, 0.5);
+    vec4 texColor = texture2D(u_texture, v_uv);
+    color = mix(vec3(0.0), color, lineEffect);
+    gl_FragColor = vec4(color * texColor.rgb * 1.9, 1.0);
 }

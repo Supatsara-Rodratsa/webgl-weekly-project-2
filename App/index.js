@@ -3,45 +3,21 @@ import {
   Scene,
   PerspectiveCamera,
   BoxGeometry,
-  MeshBasicMaterial,
   Mesh,
-  PlaneGeometry,
-  MeshStandardMaterial,
-  DirectionalLight,
-  SpotLight,
-  PointLight,
-  HemisphereLight,
-  TorusKnotGeometry,
-  RectAreaLight,
-  AmbientLight,
-  PMREMGenerator,
   TextureLoader,
-  SphereGeometry,
   PCFSoftShadowMap,
-  CameraHelper,
-  DirectionalLightHelper,
-  HemisphereLightHelper,
   Clock,
-  SpotLightHelper,
-  AxesHelper,
-  GridHelper,
-  PointLightHelper,
-  DoubleSide,
   ShaderMaterial,
-  BufferAttribute,
   Color,
-  RepeatWrapping,
-  IcosahedronGeometry,
-} from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
-import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
-import GUI from 'lil-gui';
+  Vector2,
+} from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import GUI from "lil-gui";
 
-import Stats from 'stats.js';
+import Stats from "stats.js";
 
-import vertex from './shaders/index.vert';
-import fragment from './shaders/index.frag';
+import vertex from "./shaders/index.vert";
+import fragment from "./shaders/index.frag";
 
 const TL = new TextureLoader();
 const gui = new GUI();
@@ -65,7 +41,7 @@ export default class App {
 
   _init() {
     this._renderer = new WebGLRenderer({
-      canvas: document.querySelector('#canvas'),
+      canvas: document.querySelector("#canvas"),
     });
     this._renderer.shadowMap.enabled = true;
     this._renderer.shadowMap.type = PCFSoftShadowMap;
@@ -91,48 +67,41 @@ export default class App {
   }
 
   _initEvents() {
-    window.addEventListener('resize', this._onResize.bind(this));
+    window.addEventListener("resize", this._onResize.bind(this));
   }
 
   _initMesh() {
-    const texture = TL.load('/n.jpg');
-    texture.wrapT = RepeatWrapping;
-    texture.wrapS = RepeatWrapping;
-    // const geometry = new PlaneGeometry(1, 1, 50, 50);
-    const geometry = new IcosahedronGeometry(1, 50);
-    const material = new ShaderMaterial({
+    // Create a plane geometry
+    const geometry = new BoxGeometry(3, 3, 3);
+
+    // Load Texture
+    const texture = TL.load("/texture.jpeg");
+
+    // Shader Setting
+    const shaderMaterial = new ShaderMaterial({
       vertexShader: vertex,
       fragmentShader: fragment,
       uniforms: {
-        uStrength: { value: 0.3 },
-        uColor1: { value: new Color(0x4d00ff) },
-        uColor2: { value: new Color(0x4dffff) },
-        uTexture: { value: texture },
-        uTime: { value: 0 },
+        u_resolution: {
+          value: new Vector2(window.innerWidth, window.innerHeight),
+        },
+        u_time: { value: 0.0 },
+        u_texture: { value: texture },
+        u_wave: { value: 10 },
+        u_Color1: { value: new Color(0xc8620e) },
+        u_Color2: { value: new Color(0x810e75) },
       },
     });
-    const mesh = new Mesh(geometry, material);
+
+    // Create Mesh with ShaderMaterial
+    const mesh = new Mesh(geometry, shaderMaterial);
     this._mesh = mesh;
     this._scene.add(this._mesh);
 
-    // RANDOMNESS
-    const randomArr = [];
-    const amount = geometry.attributes.position.count;
-    for (let i = 0; i < amount; i++) {
-      const r = Math.random();
-      randomArr.push(r);
-    }
-
-    // CREATE THE ATTRIBUTE
-    const randomAttribute = new BufferAttribute(new Float32Array(randomArr), 1);
-
-    // BIND THE ATTRIBUTE TO GEOMETRY
-    geometry.setAttribute('aRandom', randomAttribute);
-    console.log(geometry);
-
-    gui.add(material.uniforms.uStrength, 'value', 0, 3);
-    gui.addColor(material.uniforms.uColor1, 'value');
-    gui.addColor(material.uniforms.uColor2, 'value');
+    // GUI Config
+    gui.add(shaderMaterial.uniforms.u_wave, "value").name("Wave Freq");
+    gui.addColor(shaderMaterial.uniforms.u_Color1, "value").name("Color 1");
+    gui.addColor(shaderMaterial.uniforms.u_Color2, "value").name("Color 2");
   }
 
   _onResize() {
@@ -155,7 +124,13 @@ export default class App {
     this._raf = window.requestAnimationFrame(this._animate.bind(this));
     const t = this._clock.getElapsedTime();
 
-    this._mesh.material.uniforms.uTime.value = t;
+    // Rotate Mesh
+    this._mesh.rotation.y += 0.005;
+    this._mesh.rotation.x += 0.005;
+    this._mesh.rotation.z += 0.005;
+
+    // Update Timing
+    this._mesh.material.uniforms.u_time.value = t;
 
     this._renderer.render(this._scene, this._camera);
     this._stats.end();
