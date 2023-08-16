@@ -1,11 +1,26 @@
-varying vec2 v_uv;
-uniform float u_time;
-uniform vec2 u_resolution;
+attribute float aTimeShift;
+attribute float aScale;
 
-void main() {
-  vec2 screenCoord = position.xy / u_resolution;
-  vec3 waveOffset = vec3(sin(u_time * 2.0 + screenCoord.x * 10.0), cos(u_time * 2.0 + screenCoord.y * 10.0), 0.0);
-  vec3 transformedPosition = position + (waveOffset * 0.5);
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(transformedPosition, 1.0);
-  v_uv = uv;
+uniform float uTime; 
+uniform float uIntensity;
+
+varying vec2 vUv;
+varying float vIntensity;
+
+void main(){
+  gl_PointSize = aScale * 20.0;
+
+  float t = uTime + aTimeShift;
+  vec3 newPosition = position;
+
+  newPosition.x += cos(t + sin(0.3 * t) + sin(0.4 * t));
+  newPosition.y += cos(t + sin(0.6 * t) + sin(2.4 * t));
+  newPosition.z += cos(t + sin(0.9 * t) + sin(1.3 * t));
+
+  float intensity = distance(vec3(0.0), newPosition);
+  intensity = smoothstep(0.0, uIntensity, intensity);
+  vIntensity = intensity;
+
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+  vUv = uv;
 }
