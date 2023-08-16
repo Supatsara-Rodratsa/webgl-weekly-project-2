@@ -18,6 +18,7 @@ import {
   MeshStandardMaterial,
   MathUtils,
   AdditiveBlending,
+  SRGBColorSpace,
   Points,
 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -73,6 +74,7 @@ export default class App {
     this._renderer.shadowMap.enabled = true;
     this._renderer.shadowMap.type = PCFSoftShadowMap;
     this._renderer.useLegacyLights = false;
+    this._renderer.outputColorSpace = SRGBColorSpace;
 
     // Camera Setting
     const aspect = window.innerWidth / window.innerHeight;
@@ -144,7 +146,10 @@ export default class App {
 
           // Lamp
           if (child.name.includes("lambert5")) {
-            const fabric = TL.load("/texture/fabric.jpg");
+            const fabric = TL.load(
+              "/texture/fabric.jpg",
+              (v) => (v.colorSpace = SRGBColorSpace)
+            );
             child.material.color.set(0xcab177);
             child.material.bumpMap = fabric;
             child.material.bumpScale = 0.05;
@@ -152,7 +157,10 @@ export default class App {
 
           // Tag Name
           if (child.name.includes("lambert33")) {
-            const texture = TL.load("/texture/bark_willow_02_diff_1k.jpg");
+            const texture = TL.load(
+              "/texture/bark_willow_02_diff_1k.jpg",
+              (v) => (v.colorSpace = SRGBColorSpace)
+            );
             const normal = TL.load("/texture/bark_willow_02_nor_gl_1k.jpg");
             const rough = TL.load("/texture/bark_willow_02_arm_1k.jpg");
             child.material.color.set(0x704b35);
@@ -167,7 +175,10 @@ export default class App {
             child.name.includes("lambert4") ||
             child.name.includes("phong6")
           ) {
-            const texture = TL.load("/texture/ceramic_roof_01_diff_1k.jpg");
+            const texture = TL.load(
+              "/texture/ceramic_roof_01_diff_1k.jpg",
+              (v) => (v.colorSpace = SRGBColorSpace)
+            );
             const normal = TL.load("/texture/ceramic_roof_01_nor_gl_1k.jpg");
             const rough = TL.load("/texture/ceramic_roof_01_rough_1k.jpg");
             child.material.normalMap = normal;
@@ -181,7 +192,10 @@ export default class App {
             child.name.includes("lambert41") ||
             child.name.includes("lambert42")
           ) {
-            const texture = TL.load("/texture/aerial_rocks_02_diff_1k.jpg");
+            const texture = TL.load(
+              "/texture/aerial_rocks_02_diff_1k.jpg",
+              (v) => (v.colorSpace = SRGBColorSpace)
+            );
             const normal = TL.load("/texture/aerial_rocks_02_nor_gl_1k.jpg");
             const rough = TL.load("/texture/aerial_rocks_02_rough_1k.jpg");
             child.material.normalMap = normal;
@@ -199,7 +213,10 @@ export default class App {
             child.name.includes("lambert36") ||
             child.name.includes("lambert35")
           ) {
-            const texture = TL.load("/texture/rough_wood_diff_1k.jpg");
+            const texture = TL.load(
+              "/texture/rough_wood_diff_1k.jpg",
+              (v) => (v.colorSpace = SRGBColorSpace)
+            );
             const normal = TL.load("/texture/rough_wood_nor_gl_1k.jpg");
             const rough = TL.load("/texture/aerial_rocks_02_rough_1k.jpg");
 
@@ -216,14 +233,20 @@ export default class App {
 
           // Bamboo
           if (child.name.includes("lambert19")) {
-            const texture = TL.load("/texture/bamboo.jpeg");
+            const texture = TL.load(
+              "/texture/bamboo.jpeg",
+              (v) => (v.colorSpace = SRGBColorSpace)
+            );
             child.material.map = texture;
             child.material.color.set(0x8d823f);
           }
 
           // Fence
           if (child.name.includes("phong4")) {
-            const texture = TL.load("/texture/grey_roof_01_diff_1k.jpg");
+            const texture = TL.load(
+              "/texture/grey_roof_01_diff_1k.jpg",
+              (v) => (v.colorSpace = SRGBColorSpace)
+            );
             child.material.map = texture;
             child.material.color.set(0x8d6f53);
           }
@@ -239,7 +262,10 @@ export default class App {
             child.name.includes("lambert37") ||
             child.name.includes("lambert38")
           ) {
-            const texture = TL.load("/texture/fabric_pattern_05_col_01_1k.jpg");
+            const texture = TL.load(
+              "/texture/fabric_pattern_05_col_01_1k.jpg",
+              (v) => (v.colorSpace = SRGBColorSpace)
+            );
             const normal = TL.load("/texture/fabric_pattern_05_nor_gl_1k.jpg");
             child.material.map = texture;
             child.material.bumpMap = texture;
@@ -248,7 +274,8 @@ export default class App {
 
           if (child.name.includes("pasted__phong17")) {
             const texture = TL.load(
-              "/texture/plastered_stone_wall_diff_1k.jpg"
+              "/texture/plastered_stone_wall_diff_1k.jpg",
+              (v) => (v.colorSpace = SRGBColorSpace)
             );
             const normal = TL.load(
               "/texture/plastered_stone_wall_nor_gl_1k.jpg"
