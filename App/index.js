@@ -144,7 +144,7 @@ export default class App {
 
           // Lamp
           if (child.name.includes("lambert5")) {
-            const fabric = TL.load("/texture/fabric.avif");
+            const fabric = TL.load("/texture/fabric.jpg");
             child.material.color.set(0xcab177);
             child.material.bumpMap = fabric;
             child.material.bumpScale = 0.05;
